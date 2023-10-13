@@ -1,0 +1,134 @@
+version: "3.7"
+
+services:
+  mariadb:
+    build: ./mariadb/
+    container_name: mariadb
+    env_file: .env
+    image: mariadb_im
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - net
+    volumes:
+      - vol_mariadb:/var/lib/mysql
+  nginx:
+    build: ./ngnix/
+    container_name: nginx
+    env_file: .env
+    image: nginx_im
+    depends_on:
+      - wordpress
+    ports:
+      - 443:443
+    restart: on-failure
+    volumes:
+      - vol_wordpress:/var/www/html
+    networks:
+      - net
+  wordpress:
+    build:  ./wordpress/
+    container_name: wordpress
+    env_file: .env
+    image: wordpress_im
+    depends_on:
+      - mariadb
+    ports:
+      - 9000:9000
+    restart: always
+    volumes:
+      - vol_wordpress:/var/www/html
+    networks:
+      - net
+networks:
+  net:
+  
+volumes:
+  vol_mariadb:
+    name: v_mariadb
+    driver: local
+    driver_opts:
+      device: Users/absela/Desktop/data/vol_mariadb
+      type: none
+      o: bind
+ 
+  vol_wordpress:
+    name: v_wordpress
+    driver: local
+    driver_opts:
+      device: Users/absela/Desktop/data/vol_wordpress
+      type: none
+      o: bind
+
+
+
+
+
+
+
+
+
+
+
+# version: '3'
+
+# services:
+#   nginx:
+#     image: nginx_image:42
+#     container_name: nginx
+#     build: ./ngnix/
+#     env_file:
+#       - .env
+#     ports:
+#       - "443:443"
+#     volumes:
+#       - volwp:/var/www/html
+#     depends_on:
+#       - wordpress
+#     networks:
+#       - myNet
+#     restart: on-failure
+#   wordpress:
+#     image: wordpress:42
+#     container_name: wordpress
+#     build: ./wordpress/
+#     env_file:
+#       - .env
+#     ports:
+#       - "9000"
+#     volumes:
+#       - volwp:/var/www/html/
+#     networks:
+#       - myNet
+#     depends_on:
+#       - mariadb
+#     restart: on-failure
+#   mariadb:
+#     image: mariadb:42
+#     container_name: mariadb
+#     build: ./mariadb/
+#     env_file:
+#       - .env
+#     ports:
+#       - "3306"
+#     volumes:
+#       - voldb:/var/lib/mysql
+#     networks:
+#       - myNet
+#     restart: always
+# networks:
+#   myNet:
+#     driver: bridge
+
+# volumes:
+#   voldb:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /Users/absela/Desktop/mariadb
+#   volwp:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /Users/absela/Desktop/wordpress

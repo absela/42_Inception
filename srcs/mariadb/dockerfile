@@ -1,0 +1,11 @@
+FROM debian:bullseye
+
+EXPOSE 3306
+
+RUN apt-get update && apt-get install -y mariadb-server 
+
+COPY ./tools/script.sh /
+
+RUN chmod +x /script.sh
+
+CMD ["./script.sh"]
